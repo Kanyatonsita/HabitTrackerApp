@@ -13,6 +13,6 @@ struct Habit : Codable, Identifiable {
     @DocumentID var id : String?
     var name : String
     var done : Bool = false
-    var latest : Data?
+    var latest : [Date]?
     var streak : Int = 0
 }

@@ -28,9 +28,17 @@ class HabitListVM : ObservableObject {
     func toggle(habit: Habit) {
         guard let user = auth.currentUser else {return}
         let habitRef = db.collection("users").document(user.uid).collection("habits")
+        let date = Date()
         
         if let id = habit.id {
            habitRef.document(id).updateData(["done" : !habit.done])
+            
+            if habit.done == false{
+                if !(habit.latest?.contains(where: { Calendar.current.isDate($0, inSameDayAs: date) }) ?? false) {
+                    habitRef.document(id).updateData(["latest" : FieldValue.arrayUnion([date])])
+                    
+                }
+            }
         }
     }
     
