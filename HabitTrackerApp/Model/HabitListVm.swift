@@ -12,6 +12,7 @@ class HabitListVM : ObservableObject {
     
     let db = Firestore.firestore()
     let auth = Auth.auth()
+    let date = Date()
     
     @Published var habits = [Habit]()
     
@@ -31,12 +32,12 @@ class HabitListVM : ObservableObject {
         let date = Date()
         
         if let id = habit.id {
-           habitRef.document(id).updateData(["done" : !habit.done])
+            habitRef.document(id).updateData(["done" : !habit.done])
             
             if habit.done == false{
-                if !(habit.latest?.contains(where: { Calendar.current.isDate($0, inSameDayAs: date) }) ?? false) {
-                    habitRef.document(id).updateData(["latest" : FieldValue.arrayUnion([date])])
-                    
+                let newStreak = habit.streak + 1
+                if habit.latest != date {
+                    habitRef.document(id).updateData(["latest" : date, "streak" : newStreak])
                 }
             }
         }
@@ -70,7 +71,15 @@ class HabitListVM : ObservableObject {
                 self.habits.removeAll()
                 for document in snapshot.documents {
                     do {
-                        let habit = try document.data(as : Habit.self)
+                        var habit = try document.data(as : Habit.self)
+                        
+                        let calendar = Calendar.current
+                        if calendar.isDate(habit.latest ?? Date(), inSameDayAs: self.date) {
+                            habit.done = true
+                        } else {
+                            habit.done = false
+                        }
+                        
                         self.habits.append(habit)
                     } catch {
                         print("Error reading from db")
@@ -80,3 +89,22 @@ class HabitListVM : ObservableObject {
         }
     }    
 }
+
+
+//func resetToggle(habit: Habit) {
+//        guard let user = Auth.auth().currentUser, let habitId = habit.id else { return }
+//
+//        let habitRef = Firestore.firestore().collection("users").document(user.uid).collection("habits").document(habitId)
+//        habitRef.getDocument { (document, error) in
+//            if let document = document, document.exists {
+//                let data = document.data()
+//                if let dateTracker = data?["dateTracker"] as? [Timestamp] {
+//                    let today = Date()
+//                    let calendar = Calendar.current
+//                    if !dateTracker.contains(where: { calendar.isDate($0.dateValue(), inSameDayAs: today) }){
+//                        habitRef.updateData(["done" : false])}
+//                }
+//                }
+//            }
+//
+//        }
