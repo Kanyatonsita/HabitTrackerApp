@@ -16,15 +16,22 @@ class HabitListVM : ObservableObject {
     
     @Published var habits = [Habit]()
     
-    func delete(index: Int) {
-        guard let user = auth.currentUser else {return}
-        let habitRef = db.collection("users").document(user.uid).collection("habits")
+    func updateStreak(habit: Habit) -> Int {
+        let calendar = Calendar.current
+        let today = Date()
+        var newStreak = habit.streak
         
-        let habit = habits[index]
-        if let id = habit.id {
-            habitRef.document(id).delete()
+        if let dayDifference = calendar.dateComponents([.day], from: habit.latest ?? today, to: today).day {
+            if dayDifference <= 1 {
+                newStreak += 1
+            } else {
+                newStreak = 0
+                print(newStreak)
+            }
         }
+        return newStreak
     }
+    
     
     func toggle(habit: Habit) {
         guard let user = auth.currentUser else {return}
@@ -35,9 +42,12 @@ class HabitListVM : ObservableObject {
             habitRef.document(id).updateData(["done" : !habit.done])
             
             if habit.done == false{
-                let newStreak = habit.streak + 1
+//                let newStreak = habit.streak + 1
+                let newStreak = updateStreak(habit: habit)
+                habitRef.document(id).updateData(["streak" : newStreak])
+                
                 if habit.latest != date {
-                    habitRef.document(id).updateData(["latest" : date, "streak" : newStreak])
+                    habitRef.document(id).updateData(["latest" : date])
                 }
             }
         }
@@ -60,6 +70,7 @@ class HabitListVM : ObservableObject {
         guard let user = auth.currentUser else {return}
         let habitRef = db.collection("users").document(user.uid).collection("habits")
         
+  
         habitRef.addSnapshotListener() {
             snapshot, err in
             
@@ -73,13 +84,19 @@ class HabitListVM : ObservableObject {
                     do {
                         var habit = try document.data(as : Habit.self)
                         
-                        let calendar = Calendar.current
-                        if calendar.isDate(habit.latest ?? Date(), inSameDayAs: self.date) {
-                            habit.done = true
-                        } else {
-                            habit.done = false
-                        }
                         
+                        let today = Date()
+                        let calendar = Calendar.current
+                        var dateComponents = DateComponents()
+                        dateComponents.day = -1
+                        
+                        if let yesterday = calendar.date(byAdding: dateComponents, to: today) {
+                            if calendar.isDate(habit.latest ?? yesterday, inSameDayAs: today) {
+                                habit.done = true
+                            } else {
+                                habit.done = false
+                            }
+                        }
                         self.habits.append(habit)
                     } catch {
                         print("Error reading from db")
@@ -87,24 +104,15 @@ class HabitListVM : ObservableObject {
                 }
             }
         }
-    }    
+    }
+    
+    func delete(index: Int) {
+        guard let user = auth.currentUser else {return}
+        let habitRef = db.collection("users").document(user.uid).collection("habits")
+        
+        let habit = habits[index]
+        if let id = habit.id {
+            habitRef.document(id).delete()
+        }
+    }
 }
-
-
-//func resetToggle(habit: Habit) {
-//        guard let user = Auth.auth().currentUser, let habitId = habit.id else { return }
-//
-//        let habitRef = Firestore.firestore().collection("users").document(user.uid).collection("habits").document(habitId)
-//        habitRef.getDocument { (document, error) in
-//            if let document = document, document.exists {
-//                let data = document.data()
-//                if let dateTracker = data?["dateTracker"] as? [Timestamp] {
-//                    let today = Date()
-//                    let calendar = Calendar.current
-//                    if !dateTracker.contains(where: { calendar.isDate($0.dateValue(), inSameDayAs: today) }){
-//                        habitRef.updateData(["done" : false])}
-//                }
-//                }
-//            }
-//
-//        }
