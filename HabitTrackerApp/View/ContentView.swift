@@ -37,7 +37,7 @@ struct RowView: View {
             Spacer()
             Text(String(habit.streak))
             Button(action: {
-               vm.toggle(habit: habit)
+                vm.toggle(habit: habit)
             }){
                 Image(systemName: habit.done ? "checkmark.circle.fill" : "circle")
                     .foregroundColor(Color.black)

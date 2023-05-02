@@ -25,7 +25,6 @@ struct HabitListView: View {
                         for index in indexSet {
                             habitListVM.delete(index: index)
                         }
-                        
                     }
                 }
                 Spacer()
