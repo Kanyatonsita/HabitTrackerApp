@@ -15,4 +15,5 @@ struct Habit : Codable, Identifiable {
     var done : Bool = false
     var latest : Date?
     var streak : Int = 0
+    var emoji : String?
 }

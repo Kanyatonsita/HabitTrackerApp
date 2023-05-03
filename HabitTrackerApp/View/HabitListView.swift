@@ -14,7 +14,6 @@ struct HabitListView: View {
     @State var newHabitName = ""
     
     var body: some View {
-
             VStack {
                 Spacer()
                 List {

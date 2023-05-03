@@ -14,7 +14,7 @@ struct ContentView: View {
     
     var body: some View {
         ZStack{
-            Color(red: 98/256, green: 108/256, blue: 62/256)
+            Color(red: 15/256, green: 35/256, blue: 26/256)
                 .ignoresSafeArea()
             
             if !signedIn {
@@ -32,19 +32,21 @@ struct RowView: View {
     let vm : HabitListVM
     
     var body: some View {
-        HStack {
-            Text(habit.name)
-            Spacer()
-            Text(String(habit.streak))
-            Button(action: {
-                vm.toggle(habit: habit)
-            }){
-                Image(systemName: habit.done ? "checkmark.circle.fill" : "circle")
-                    .foregroundColor(Color.black)
+            HStack {
+                Text(habit.name)
+                Spacer()
+                Text(habit.streak == 0 ? "" : "\(habit.emoji ?? "")")
+                Text(String(habit.streak))
+                Button(action: {
+                    vm.toggle(habit: habit)
+                    vm.updateEmoji(habit: habit)
+                }){
+                    Image(systemName: habit.done ? "checkmark.circle.fill" : "circle")
+                        .foregroundColor(Color.black)
+                }
             }
         }
     }
-}
 
 struct ContentView_Previews: PreviewProvider {
     static var previews: some View {

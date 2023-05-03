@@ -54,6 +54,23 @@ class HabitListVM : ObservableObject {
             }
         }
     
+    func updateEmoji(habit: Habit) {
+        guard let user = auth.currentUser else {return}
+        let habitRef = db.collection("users").document(user.uid).collection("habits")
+        
+        if let id = habit.id {
+            var emoji = ""
+            if habit.streak >= 0 && habit.streak < 5 {
+                emoji = "☺️👍"
+            } else if habit.streak >= 5 && habit.streak < 10 {
+                emoji = "🔥💪"
+            } else if habit.streak >= 10 {
+                emoji = "🏆😎"
+            }
+            habitRef.document(id).updateData(["emoji" : emoji])
+        }
+    }
+    
     func saveToFirestore(habitName: String) {
             guard let user = auth.currentUser else {return}
             let habitRef = db.collection("users").document(user.uid).collection("habits")
@@ -88,10 +105,11 @@ class HabitListVM : ObservableObject {
                             let calendar = Calendar.current
                             var dateComponents = DateComponents()
                             dateComponents.day = -1
-                            
+
                             if let yesterday = calendar.date(byAdding: dateComponents, to: today) {
                                 if calendar.isDate(habit.latest ?? yesterday, inSameDayAs: today) {
                                     habit.done = true
+                                    
                                 } else {
                                     habit.done = false
                                 }
