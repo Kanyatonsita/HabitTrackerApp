@@ -43,13 +43,12 @@ class HabitListVM : ObservableObject {
             if let id = habit.id {
                 habitRef.document(id).updateData(["done" : !habit.done])
                 
-                if habit.done == false{
-                    let newStreak = habit.streak + 1
-                    habitRef.document(id).updateData(["streak" : newStreak])
-                    
+                if habit.done == false {
                     if habit.latest != date {
                         habitRef.document(id).updateData(["latest" : date])
                     }
+                    let newStreak = habit.streak + 1
+                    habitRef.document(id).updateData(["streak" : newStreak])
                 }
             }
         }
