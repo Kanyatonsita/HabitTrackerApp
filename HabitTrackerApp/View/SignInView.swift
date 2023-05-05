@@ -25,20 +25,20 @@ struct SignInView: View {
         }){
             ZStack{
                 Image("blackground")
-                HStack{
-                    Image(systemName: "person.circle")
-                        .font(.largeTitle)
-                        .fontWeight(.bold)
-                        .foregroundColor(Color.white)
-                        .padding(.leading)
-                    Text("Sign in")
-                        .font(.largeTitle)
-                        .fontWeight(.bold)
-                        .foregroundColor(Color.white)
-                        .padding([.top, .bottom, .trailing])
-                }
-                .background(Color(red: 177/256, green: 112/256, blue: 54/256))
-                .cornerRadius(40.0)
+                    HStack{
+                        Image(systemName: "person.circle")
+                            .font(.largeTitle)
+                            .fontWeight(.bold)
+                            .foregroundColor(Color.white)
+                            .padding(.leading)
+                        Text("Sign in")
+                            .font(.largeTitle)
+                            .fontWeight(.bold)
+                            .foregroundColor(Color.white)
+                            .padding([.top, .bottom, .trailing])
+                    }
+                    .background(Color(red: 177/256, green: 112/256, blue: 54/256))
+                    .cornerRadius(40.0)
             }
         }
     }

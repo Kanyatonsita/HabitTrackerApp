@@ -21,7 +21,6 @@ struct ContentView: View {
                 SignInView(signedIn: $signedIn)
             } else {
                 HabitListView()
-
             }
         }
     }
@@ -32,21 +31,21 @@ struct RowView: View {
     let vm : HabitListVM
     
     var body: some View {
-            HStack {
-                Text(habit.name)
-                Spacer()
-                Text(habit.streak == 0 ? "" : "\(habit.emoji ?? "")")
-                Text(String(habit.streak))
-                Button(action: {
-                    vm.toggle(habit: habit)
-                    vm.updateEmoji(habit: habit)
-                }){
-                    Image(systemName: habit.done ? "checkmark.circle.fill" : "circle")
-                        .foregroundColor(Color.black)
-                }
+        HStack {
+            Text(habit.name)
+            Spacer()
+            Text(habit.streak == 0 ? "" : "\(habit.emoji ?? "")")
+            Text(String(habit.streak))
+            Button(action: {
+                vm.toggle(habit: habit)
+                vm.updateEmoji(habit: habit)
+            }){
+                Image(systemName: habit.done ? "checkmark.circle.fill" : "circle")
+                    .foregroundColor(Color.black)
             }
         }
     }
+}
 
 struct ContentView_Previews: PreviewProvider {
     static var previews: some View {
